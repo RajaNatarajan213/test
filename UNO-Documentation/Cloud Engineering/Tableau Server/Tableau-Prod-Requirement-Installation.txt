@@ -1,0 +1,155 @@
+Tableau Prod Requirement
+------------------------------------------------------------------------------------------------------------------------
+INSTALL TYPE: - Single node
+
+PROCESSOR: - 64-bit ( x64 chipsets)
+Must support SSE4.2 and POPCNT instruction sets
+ARM-based processors are not supported
+
+CPU: - 8 cores (16 vCPUs), 2.0 GHz or higher
+
+RAM: - 	Version 2022.3 and later: 128 GB
+
+		Version 2021.4.0 to version 2022.1.x: 64 GB
+
+			
+		Version 2021.3.x and earlier: 32 GB
+
+		
+FREE DISK SPACE: - 500 GB - 1 TB
+------------------------------------------------------------------------------------------------------------------------
+
+Tableau Prerequisties
+------------------------------------------------------------------------------------------------------------------------
+
+Licesnse key
+Registration Details
+Tableau server admin username and password
+create root user in the ec2 instance for Tableau Service Manager.
+
+
+Tableau Installation 
+------------------------------------------------------------------------------------------------------------------------
+Step 1: Install Tableau Server package and start Tableau Services Manager
+	
+	sudo yum update
+
+	sudo yum install tableau-server-<version>.x86_64.rpm
+
+	Initialize TSM
+
+		Navigate to the scripts directory:
+
+			cd /opt/tableau/tableau_server/packages/scripts.<version_code>/
+
+		Run the following script to start TSM:
+
+			sudo ./initialize-tsm --accepteula --activation-service --<optional_parameters>
+
+		Log off and log on again to the terminal before you configure Tableau Server.
+
+Step 2: Activate and register Tableau Server
+		TSM uses port 8850. If you are running a local firewall, open port 8850
+
+		To activate a product key, run the following command:
+
+			tsm licenses activate -k TSSE-988F-5BD0-C07F-12EF
+
+		Register Tableau Server
+
+			Generate a template that you can edit by running the following command:
+
+				tsm register --template > /path/to/<registration_file>.json
+
+			Edit the template file to create your completed registration file.
+			Here is an example of a registration file in the required format:
+
+				{
+				    "first_name" : "Andrew",
+				    "last_name" : "Smith",
+				    "phone" : "311-555-2368",
+				    "email" : "andrew.smith@mycompany.com",
+				    "company" : "My Company",
+				    "industry" : "Finance",
+				    "company_employees" : "500",			
+				    "department" : "Engineering",
+				    "title" : "Senior Manager",
+				    "city" : "Kirkland",
+				    "state" : "WA",
+				    "zip" : "98034",
+				    "country" : "United States",
+				    "opt_in" : "true",
+				    "eula" : "true"
+				}
+
+		After saving changes to the file, pass it with the --file option to register Tableau Server:
+
+			tsm register --file /path/to/<registration_file>.json
+
+		For example:
+
+			tsm register --file /usr/share/tableau-reg-file.json
+
+Step 3: Configure local identity store
+
+	Configure identity store settings
+	You must configure the identity store settings for the Tableau Server computer.
+	Important: After you have configured and applied settings for the identity store, it cannot be changed.
+	save the following to a json file:
+		{
+		  "configEntities": {
+		    "identityStore": {
+		       "_type": "identityStoreType",
+		       "type": "local"
+		     }
+		   }
+		}	
+
+		tsm settings import -f path-to-file.json.
+
+		tsm pending-changes apply
+
+	Initialize and start Tableau Server
+	To initialize and start Tableau Server, use the --start-server option:
+
+		tsm initialize --start-server --request-timeout 1800
+
+	This saves time by starting the server running after initialization.
+	If you are going to reconfigure Tableau Server after initialization, leave the --start-server option off:
+
+		tsm initialize --request-timeout 1800
+
+	This stops the server after initialization.
+
+	Start Tableau Server. If you did not use the --start-server option during initialization and are finished configuring Tableau Server, use this command to start the server:
+
+		tsm start --request-timeout 900
+
+Step 4: Finalize installation
+
+		Apply the configurations you made in the previous steps. Run the following command:
+
+			tsm pending-changes apply
+
+		Initialize and start Tableau Server. Run the following command:
+
+			tsm initialize --start-server --request-timeout 1800
+
+		Create the Tableau Server administrator account. Run the following command:
+		Where '<password>' is a strong password. Enclose the password and other arguments in single quotes.
+
+			tabcmd initialuser --server 'localhost:80' --username 'admin' --password '<password>'
+
+Step 5: Install PostgreSQL drivers
+		
+		Download PostgreSQL drivers from the Driver Download page (https://www.tableau.com/support/drivers?_ga=2.224891036.727004820.1681974052-908743941.1678167066)
+
+		Copy the .jar file to this folder (you may have to create it manually): /opt/tableau/tableau_driver/jdbc.
+
+		Restart TSM:
+
+			tsm restart
+
+		To validate that the drivers installed, navigate to the Administrative Views in Tableau Server.
+
+------------------------------------------------------------------------------------------------------------------------

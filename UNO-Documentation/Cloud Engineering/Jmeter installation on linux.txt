@@ -1,0 +1,75 @@
+-------------------------------------------------------------------------------------------
+Prerequisites 
+	Java
+	JMeter
+	xauth
+	Putty or Mobaxterm
+
+step to install jmeter and launch in GUI mode
+-------------------------------------------------------------------------------------------
+	1. Ensure X11Forwarding is enabled -> (check note)
+	2. ssh into the ec2 machine on mobaxterm or putty using the pem key file 
+
+Steps to install Java
+-------------------------------------------------------------------------------------------
+	sudo yum update -y
+	sudo yum install java-1.8.0
+
+	# validate java
+	java -version
+
+Steps to install jmeter
+-------------------------------------------------------------------------------------------
+step 1: 
+create a folder and traverse into the folder
+	mkdir apache-jmeter
+	cd apache-jmeter
+
+step 2:
+Install and validate Jmeter
+	#download JMeter 5.5
+		wget https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.5.tgz
+
+	# download JMeter 5.5 checksum
+		sha512sum apache-jmeter-5.5.tgz
+
+	# validate checksum
+		if [[ $(cat apache-jmeter-5.5.tgz.sha512 | awk '{print $1}') -eq $(sha512sum apache-jmeter-5.5.tgz | awk '{print $1}') ]] ; then echo "Valid checksum. Proceeding to extract."; else echo "Invalid Checksum, please download it from secured source." ; fi ;
+
+	# extracting JMeter
+		tar -xf apache-jmeter-5.5.tgz
+		rm apache-jmeter-5.5.tgz
+
+	# validate JMeter
+		cd apache-jmeter-5.5/bin/
+		./jmeter -v
+
+step 3: 
+Install xauth in EC2
+	sudo yum install xauth -y
+	
+	export DISPLAY=localhost:10.0
+
+	# validate X11 forwarding
+	# this should print `X11Forwarding yes`
+		sudo cat /etc/ssh/sshd_config | grep X11
+		
+step 4: 
+Reboot the ec2 machine
+
+step 5: 
+close the session and start again 
+Traverse into the folder
+	cd apache-jmeter/apache-jmeter-5.5/bin/
+	
+To launch jmeter in GUI
+	./jmeter
+-------------------------------------------------------------------------------------------
+
+Note:
+To enable X11Forwarding on Putty	
+	follow the path: - connection -> SSH (expand) -> Auth -> X11. enable the X11Forwarding 
+	
+To enable X11Forwarding on Mobaxterm
+	1. click on new session -> SSH -> Advanced SSH Settings. enable the X11Forwarding
+	

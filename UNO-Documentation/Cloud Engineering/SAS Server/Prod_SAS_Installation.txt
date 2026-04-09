@@ -1,0 +1,41 @@
+SAS Installation on Integration Prod
+
+EC2 Instance Type: - i3en.2xlarge
+OS: - Windows 2019 base
+VPC: - Integration VPC
+Storage: - 300gb
+
+we logged into the SAS Server using RDP as Administrator 
+
+we created a disk partition for C and D Drive with 100gb and 200gb respectively.
+
+we turned on DEP for essential Windows Programs and services only in the Advanced System setting under perfomance settings -> Data Execution Prevention
+
+Two users were created 
+	username: - sas
+	password: - UNO@1324Pass!
+
+	username: - sasdemo
+	password: - UNO@1324Pass!
+
+One Group was created and the users were added to this group
+	groupname: - sasusers
+
+The group "sasusers" was added to the local policies "Log on as a batch job"
+
+we downloaded the installer using this link "http://www.sas.com/downloadmgr"
+While running the installer we added the Order Number "9CSM5B" and SAS Installation Key "4LRY-26XZ-57RS" which was provied in the order summary mail sent by Ashim
+
+The default license key file "SAS94_9CSM5B_70302461_Win_X64_Srv.txt" was expired on 15th Dec 2022 and we couldn't proceed with the installation. so we used the current license key file "SAS94_9CTJDD_70302461_Win_X64_Srv.txt" and the installation was successfull.
+
+
+
+
+	
+
+
+
+
+
+
+RS
